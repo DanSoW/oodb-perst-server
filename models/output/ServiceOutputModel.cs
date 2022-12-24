@@ -1,17 +1,18 @@
-﻿using Perst;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace oodb_project.models
+namespace ConsoleApp1.models.output
 {
-    /// <summary>
-    /// Модель, характеризующая отдельный сервис (микросервис)
-    /// </summary>
-    public class ServiceModel : Persistent
+    internal class ServiceOutputModel
     {
-        public ServiceModel()
+        public ServiceOutputModel()
         {
         }
 
-        public ServiceModel(string id, string name, int port, int timeUpdate, string dataSourceId)
+        public ServiceOutputModel(string id, string name, int port, int timeUpdate, string dataSourceId)
         {
             Id = id;
             Name = name;

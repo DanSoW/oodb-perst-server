@@ -1,9 +1,11 @@
-﻿namespace oodb_project.models
+﻿using Perst;
+
+namespace oodb_project.models
 {
     /// <summary>
     /// Модель связки конкретных сервисов с конкретными хостами
     /// </summary>
-    public class HostServiceModel
+    public class HostServiceModel : Persistent
     {
         public HostServiceModel()
         {

@@ -1,9 +1,11 @@
-﻿namespace oodb_project.models
+﻿using Perst;
+
+namespace oodb_project.models
 {
     /// <summary>
     /// Модель, характеризующая приложения для мониторинга состояния удалённых хостов
     /// </summary>
-    public class MonitorAppModel
+    public class MonitorAppModel : Persistent
     {
         public MonitorAppModel()
         {

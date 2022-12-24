@@ -8,10 +8,11 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>ConsoleApp1</RootNamespace>
     <AssemblyName>ConsoleApp1</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -52,24 +53,45 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Laputa.cs" />
+    <Compile Include="constants\ApiPerstServiceUrl.cs" />
+    <Compile Include="controllers\high_level\AdminHighController.cs" />
+    <Compile Include="controllers\high_level\DataSourceHighController.cs" />
+    <Compile Include="controllers\high_level\HostHighController.cs" />
+    <Compile Include="controllers\high_level\HostServiceHighController.cs" />
+    <Compile Include="controllers\high_level\MonitorAppHighController.cs" />
+    <Compile Include="controllers\high_level\ServiceHighController.cs" />
+    <Compile Include="controllers\low_level\AdminLowController.cs" />
+    <Compile Include="controllers\low_level\DataSourceLowController.cs" />
+    <Compile Include="controllers\low_level\HostLowController.cs" />
+    <Compile Include="controllers\low_level\HostServiceLowController.cs" />
+    <Compile Include="controllers\low_level\MonitorAppLowController.cs" />
+    <Compile Include="controllers\low_level\ServiceLowController.cs" />
+    <Compile Include="data\MockData.cs" />
     <Compile Include="models\AdminModel.cs" />
     <Compile Include="models\DataSourceModel.cs" />
+    <Compile Include="models\HttpModel.cs" />
+    <Compile Include="models\output\AdminOutputModel.cs" />
     <Compile Include="models\HostModel.cs" />
     <Compile Include="models\Host\HostQuery.cs" />
     <Compile Include="models\HostServiceModel.cs" />
     <Compile Include="models\MessageModel.cs" />
     <Compile Include="models\MonitorAppModel.cs" />
     <Compile Include="models\MonitorApp\MonitorAppQuery.cs" />
+    <Compile Include="models\output\DataSourceOutputModel.cs" />
+    <Compile Include="models\output\HostOutputModel.cs" />
+    <Compile Include="models\output\HostServiceOutputModel.cs" />
+    <Compile Include="models\output\MonitorAppOutputModel.cs" />
+    <Compile Include="models\output\ServiceOutputModel.cs" />
     <Compile Include="models\ServiceModel.cs" />
     <Compile Include="models\Service\ServiceQuery.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utils.cs" />
+    <Compile Include="root\PerstRoot.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

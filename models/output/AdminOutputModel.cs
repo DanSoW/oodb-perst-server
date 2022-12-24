@@ -6,13 +6,13 @@ namespace oodb_project.models
     /// <summary>
     /// Модель, характеризующая администратора приложения для мониторинга
     /// </summary>
-    public class AdminModel : Persistent
+    public class AdminOutputModel
     {
-        public AdminModel()
+        public AdminOutputModel()
         {
         }
 
-        public AdminModel(string id, string email)
+        public AdminOutputModel(string id, string email)
         {
             Id = id;
             Email = email;

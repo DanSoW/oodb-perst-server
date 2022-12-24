@@ -1,9 +1,11 @@
-﻿namespace oodb_project.models
+﻿using Perst;
+
+namespace oodb_project.models
 {
     /// <summary>
     /// Модель, характеризующая источник данных для сервиса
     /// </summary>
-    public class DataSourceModel
+    public class DataSourceModel : Persistent
     {
         public DataSourceModel()
         {

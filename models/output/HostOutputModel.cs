@@ -1,17 +1,18 @@
-﻿using Perst;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace oodb_project.models
+namespace ConsoleApp1.models.output
 {
-    /// <summary>
-    /// Модель, характеризующая конкретный удалённый хост
-    /// </summary>
-    public class HostModel : Persistent
+    internal class HostOutputModel
     {
-        public HostModel()
+        public HostOutputModel()
         {
         }
 
-        public HostModel(string id, string name, string url, string iPv4, string system)
+        public HostOutputModel(string id, string name, string url, string iPv4, string system)
         {
             Id = id;
             Name = name;
@@ -25,6 +26,5 @@ namespace oodb_project.models
         public string Url { get; set; }
         public string IPv4 { get; set; }
         public string System { get; set; }
-
     }
 }
