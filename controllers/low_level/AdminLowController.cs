@@ -24,27 +24,35 @@ namespace ConsoleApp1.controllers.low_level
         /// <summary>
         /// Обновление объекта AdminModel
         /// </summary>
-        /*public Func<AdminModel, IResult> update = (newData) =>
+        public string update(string obj)
         {
             if (_db == null)
             {
-                return Results.Json(new MessageModel("Подключение к ООБД отсутствует"));
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
 
+            var data = JsonConvert.DeserializeObject<AdminOutputModel>(obj);
             try
             {
-                AdminModel data = _db.Query<AdminModel>(value => value.Id == newData.Id)[0];
-                data.Email = newData.Email;
+                AdminModel admin = (AdminModel)_root.idxAdmin[data.Id];
 
-                _db.Store(data);
+                if(admin == null)
+                {
+                    return JsonConvert.SerializeObject(new MessageModel("Объекта по данному ID нет в БД"));
+                }
+
+                admin.Email = data.Email;
+
+                // Обновление данных
+                admin.Modify();
             }
             catch (Exception e)
             {
-                return Results.Json(new MessageModel(e.Message));
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
             }
 
-            return Results.Json(newData);
-        };*/
+            return JsonConvert.SerializeObject(data);
+        }
 
         /// <summary>
         /// Создание объекта AdminModel
@@ -60,7 +68,7 @@ namespace ConsoleApp1.controllers.low_level
             try
             {
                 data.Id = Guid.NewGuid().ToString();
-                _root.idxAdmin.Put(new AdminModel(data.Id, data.Email));
+                _root.idxAdmin.Put(new AdminModel(data.Id, data.Email, _db.CreateLink()));
             }
             catch (Exception e)
             {
@@ -100,48 +108,69 @@ namespace ConsoleApp1.controllers.low_level
         /// <summary>
         /// Получение конкретного объекта AdminModel
         /// </summary>
-        /*public Func<string, IResult> get = (id) =>
+        public string get(string id)
         {
             if (_db == null)
             {
-                return Results.Json(new MessageModel("Подключение к ООБД отсутствует"));
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
 
             try
             {
-                // Получение конкретной модели
-                AdminModel data = _db.Query<AdminModel>(value => value.Id == id)[0];
+                AdminOutputModel admin = null;
 
-                return Results.Json(data);
+                for (var i = 0; i < _root.idxAdmin.Count; i++)
+                {
+                    AdminModel item = (AdminModel)_root.idxAdmin.GetAt(i);
+                    if(item.Id == id)
+                    {
+                        admin = new AdminOutputModel(item.Id, item.Email);
+                        break;
+                    }
+                }
+
+                return JsonConvert.SerializeObject(admin);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return Results.Json(new MessageModel($"Модели с Id = {id} нет в ООБД"));
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
             }
-        };*/
+        }
 
         /// <summary>
         /// Удаление объекта AdminModel
         /// </summary>
-        /*public Func<string, IResult> delete = (id) =>
+        public string delete(string id)
         {
             if (_db == null)
             {
-                return Results.Json(new MessageModel("Подключение к ООБД отсутствует"));
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
+
+            AdminOutputModel adminOutput;
 
             try
             {
-                // Получение конкретной модели
-                AdminModel data = _db.Query<AdminModel>(value => value.Id == id)[0];
-                _db.Delete(data);
+                AdminModel admin = (AdminModel)_root.idxAdmin[id];
 
-                return Results.Json(data);
+                if (admin == null)
+                {
+                    return JsonConvert.SerializeObject(new MessageModel("Объекта по данному ID нет в БД"));
+                }
+
+                adminOutput = new AdminOutputModel(
+                    admin.Id,
+                    admin.Email
+                );
+
+                admin.CascadeDelete(_root);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return Results.Json(new MessageModel($"Модели с Id = {id} нет в ООБД"));
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
             }
-        };*/
+
+            return JsonConvert.SerializeObject(adminOutput);
+        }
     }
 }

@@ -23,58 +23,66 @@ namespace ConsoleApp1.controllers.low_level
         }
 
         /// <summary>
-        /// Обновление объекта AdminModel
+        /// Обновление объекта DataSourceModel
         /// </summary>
-        /*public Func<AdminModel, IResult> update = (newData) =>
+        public string update(string obj)
         {
             if (_db == null)
             {
-                return Results.Json(new MessageModel("Подключение к ООБД отсутствует"));
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
 
+            var data = JsonConvert.DeserializeObject<DataSourceOutputModel>(obj);
             try
             {
-                AdminModel data = _db.Query<AdminModel>(value => value.Id == newData.Id)[0];
-                data.Email = newData.Email;
+                DataSourceModel dataSource = (DataSourceModel)_root.idxDataSource[data.Id];
 
-                _db.Store(data);
+                if (dataSource == null)
+                {
+                    return JsonConvert.SerializeObject(new MessageModel("Объекта по данному ID нет в БД"));
+                }
+
+                dataSource.Name = data.Name;
+                dataSource.Url = data.Url;
+
+                // Обновление данных
+                dataSource.Modify();
             }
             catch (Exception e)
             {
-                return Results.Json(new MessageModel(e.Message));
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
             }
 
-            return Results.Json(newData);
-        };*/
+            return JsonConvert.SerializeObject(data);
+        }
 
         /// <summary>
-        /// Создание объекта AdminModel
+        /// Создание объекта DataSourceModel
         /// </summary>
-        /*public Func<AdminModel, IResult> create = (data) =>
+        public string create(string obj)
         {
             if (_db == null)
             {
-                return Results.Json(new MessageModel("Подключение к ООБД отсутствует"));
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
+
+            var data = JsonConvert.DeserializeObject<DataSourceOutputModel>(obj);
 
             try
             {
-                // Автоматическая генерация UUID
                 data.Id = Guid.NewGuid().ToString();
-
-                // Сохранение модели в ООДБ
-                _db.Store(data);
+                _root.idxDataSource.Put(new DataSourceModel(data.Id, data.Name, data.Url, _db.CreateLink()));
             }
             catch (Exception e)
             {
-                return Results.Json(new MessageModel(e.Message));
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
             }
 
-            return Results.Json(data);
-        };*/
+            return JsonConvert.SerializeObject(data);
+        }
 
         /// <summary>
-        /// Получение всех объектов AdminModel
+        /// Получение всех объектов DataSourceModel
         /// </summary>
         public string getAll()
         {
@@ -106,50 +114,73 @@ namespace ConsoleApp1.controllers.low_level
         }
 
         /// <summary>
-        /// Получение конкретного объекта AdminModel
+        /// Получение конкретного объекта DataSourceModel
         /// </summary>
-        /*public Func<string, IResult> get = (id) =>
+        public string get(string id)
         {
             if (_db == null)
             {
-                return Results.Json(new MessageModel("Подключение к ООБД отсутствует"));
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
 
             try
             {
-                // Получение конкретной модели
-                AdminModel data = _db.Query<AdminModel>(value => value.Id == id)[0];
+                DataSourceOutputModel dataSource = null;
 
-                return Results.Json(data);
+                for (var i = 0; i < _root.idxDataSource.Count; i++)
+                {
+                    DataSourceModel item = (DataSourceModel)_root.idxDataSource.GetAt(i);
+                    if (item.Id == id)
+                    {
+                        dataSource = new DataSourceOutputModel(item.Id, item.Name, item.Url);
+                        break;
+                    }
+                }
+
+                return JsonConvert.SerializeObject(dataSource);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return Results.Json(new MessageModel($"Модели с Id = {id} нет в ООБД"));
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
             }
-        };*/
+        }
 
         /// <summary>
-        /// Удаление объекта AdminModel
+        /// Удаление объекта DataSourceModel
         /// </summary>
-        /*public Func<string, IResult> delete = (id) =>
+        public string delete(string id)
         {
             if (_db == null)
             {
-                return Results.Json(new MessageModel("Подключение к ООБД отсутствует"));
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
+
+            DataSourceOutputModel dataSourceOutput;
 
             try
             {
-                // Получение конкретной модели
-                AdminModel data = _db.Query<AdminModel>(value => value.Id == id)[0];
-                _db.Delete(data);
+                DataSourceModel dataSource = (DataSourceModel)_root.idxDataSource[id];
 
-                return Results.Json(data);
+                if (dataSource == null)
+                {
+                    return JsonConvert.SerializeObject(new MessageModel("Объекта по данному ID нет в БД"));
+                }
+
+                dataSourceOutput = new DataSourceOutputModel(
+                    dataSource.Id,
+                    dataSource.Name,
+                    dataSource.Url
+                );
+
+                // Каскадное удаление
+                dataSource.CascadeDelete(_root);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return Results.Json(new MessageModel($"Модели с Id = {id} нет в ООБД"));
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
             }
-        };*/
+
+            return JsonConvert.SerializeObject(dataSourceOutput);
+        }
     }
 }

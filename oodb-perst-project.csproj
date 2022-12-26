@@ -70,6 +70,7 @@
     <Compile Include="models\AdminModel.cs" />
     <Compile Include="models\DataSourceModel.cs" />
     <Compile Include="models\HttpModel.cs" />
+    <Compile Include="models\IndexModel.cs" />
     <Compile Include="models\output\AdminOutputModel.cs" />
     <Compile Include="models\HostModel.cs" />
     <Compile Include="models\Host\HostQuery.cs" />

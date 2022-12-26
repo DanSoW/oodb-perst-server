@@ -1,4 +1,5 @@
-﻿using Perst;
+﻿using ConsoleApp1.root;
+using Perst;
 
 namespace oodb_project.models
 {
@@ -11,19 +12,32 @@ namespace oodb_project.models
         {
         }
 
-        public MonitorAppModel(string id, string name, string url, string hostId, string adminId)
+        public MonitorAppModel(string id, string name, string url, HostModel host, AdminModel admin)
         {
             Id = id;
             Name = name;
             Url = url;
-            HostId = hostId;
-            AdminId = adminId;
+            Host = host;
+            Admin = admin;
         }
 
         public string Id { get; set; }
         public string Name { get; set; }
         public string Url { get; set; }
-        public string HostId { get; set; }
-        public string AdminId { get; set; }
+        public HostModel Host { get; set; }
+        public AdminModel Admin { get; set; }
+
+        /// <summary>
+        /// Удаление текущего экземпляра объекта из ООБД
+        /// </summary>
+        /// <param name="root">Корневой элемент ООБД</param>
+        /// <returns></returns>
+        public bool Delete(PerstRoot root)
+        {
+            Host.MonitorAppLink.Remove(this);
+            Admin.MonitorAppLink.Remove(this);
+
+            return root.idxMonitorApp.Remove(this);
+        }
     }
 }

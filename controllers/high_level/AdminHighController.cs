@@ -32,19 +32,38 @@ namespace ConsoleApp1
 
         protected override void OnMessage(MessageEventArgs e)
         {
-            HttpModel body = JsonConvert.DeserializeObject<HttpModel>(e.Data);
+            InitSendRoute(JsonConvert.DeserializeObject<HttpModel>(e.Data));
+        }
 
-            if(body.Path == ApiPerstServiceUrl.GET_ALL)
+        public void InitSendRoute(HttpModel body)
+        {
+            if (body.Path == ApiPerstServiceUrl.GET_ALL)
             {
                 Send(_controller.getAll());
                 return;
-            }else if (body.Path == ApiPerstServiceUrl.CREATE)
+            }
+            else if (body.Path == ApiPerstServiceUrl.GET)
+            {
+                Send(_controller.get(body.Payload));
+                return;
+            }
+            else if (body.Path == ApiPerstServiceUrl.CREATE)
             {
                 Send(_controller.create(body.Payload));
                 return;
             }
+            else if (body.Path == ApiPerstServiceUrl.UPDATE)
+            {
+                Send(_controller.update(body.Payload));
+                return;
+            }
+            else if (body.Path == ApiPerstServiceUrl.DELETE)
+            {
+                Send(_controller.delete(body.Payload));
+                return;
+            }
 
-            Send(_controller.getAll());
+            Send(JsonConvert.SerializeObject(new MessageModel("Not found 404")));
         }
     }
 }

@@ -23,58 +23,120 @@ namespace ConsoleApp1.controllers.low_level
         }
 
         /// <summary>
-        /// Обновление объекта AdminModel
+        /// Обновление объекта MonitorApp
         /// </summary>
-        /*public Func<AdminModel, IResult> update = (newData) =>
+        public string update(string obj)
         {
             if (_db == null)
             {
-                return Results.Json(new MessageModel("Подключение к ООБД отсутствует"));
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
 
+            var data = JsonConvert.DeserializeObject<MonitorAppOutputModel>(obj);
             try
             {
-                AdminModel data = _db.Query<AdminModel>(value => value.Id == newData.Id)[0];
-                data.Email = newData.Email;
+                var monitorApp = (MonitorAppModel)_root.idxMonitorApp[data.Id];
 
-                _db.Store(data);
+                if (monitorApp == null)
+                {
+                    return JsonConvert.SerializeObject(
+                        new MessageModel($"Экземпляра объекта MonitorAppModel с id={data.Id} не существует в ООБД")
+                    );
+                }
+
+                var host = (HostModel)_root.idxHost[data.HostId];
+
+                if (host == null)
+                {
+                    return JsonConvert.SerializeObject(
+                        new MessageModel($"Экземпляра объекта HostModel с id={data.HostId} не существует в ООБД")
+                    );
+                }
+
+                var admin = (AdminModel)_root.idxAdmin[data.AdminId];
+
+                if (admin == null)
+                {
+                    return JsonConvert.SerializeObject(
+                        new MessageModel($"Экземпляра объекта AdminModel с id={data.AdminId} не существует в ООБД")
+                    );
+                }
+
+                var oldAdmin = (AdminModel)_root.idxService[monitorApp.Admin.Id];
+                oldAdmin.MonitorAppLink.Remove(monitorApp);
+
+                var oldHost = (HostModel)_root.idxHost[monitorApp.Host.Id];
+                oldHost.MonitorAppLink.Remove(monitorApp);
+
+                admin.MonitorAppLink.Add(monitorApp);
+                monitorApp.Admin = admin;
+
+                host.MonitorAppLink.Add(monitorApp);
+                monitorApp.Host = host;
+
+                monitorApp.Modify();
             }
             catch (Exception e)
             {
-                return Results.Json(new MessageModel(e.Message));
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
             }
 
-            return Results.Json(newData);
-        };*/
+            return JsonConvert.SerializeObject(data);
+        }
 
         /// <summary>
-        /// Создание объекта AdminModel
+        /// Создание объекта MonitorApp
         /// </summary>
-        /*public Func<AdminModel, IResult> create = (data) =>
+        public string create(string obj)
         {
             if (_db == null)
             {
-                return Results.Json(new MessageModel("Подключение к ООБД отсутствует"));
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
 
+            var data = JsonConvert.DeserializeObject<MonitorAppOutputModel>(obj);
             try
             {
-                // Автоматическая генерация UUID
+                var host = (HostModel)_root.idxHost[data.HostId];
+
+                if (host == null)
+                {
+                    return JsonConvert.SerializeObject(
+                        new MessageModel($"Экземпляра объекта HostModel с id={data.HostId} не существует в ООБД")
+                    );
+                }
+
+                var admin = (AdminModel)_root.idxAdmin[data.AdminId];
+                if (admin == null)
+                {
+                    return JsonConvert.SerializeObject(
+                        new MessageModel($"Экземпляра объекта AdminModel с id={data.AdminId} не существует в ООБД")
+                    );
+                }
+
                 data.Id = Guid.NewGuid().ToString();
+                var monitorApp = new MonitorAppModel(
+                    data.Id,
+                    data.Name,
+                    data.Url,
+                    host,
+                    admin
+                );
 
-                // Сохранение модели в ООДБ
-                _db.Store(data);
+                host.MonitorAppLink.Add(monitorApp);
+                admin.MonitorAppLink.Add(monitorApp);
+
+                _root.idxMonitorApp.Put(monitorApp);
             }
             catch (Exception e)
             {
-                return Results.Json(new MessageModel(e.Message));
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
             }
-
-            return Results.Json(data);
-        };*/
+            return JsonConvert.SerializeObject(data);
+        }
 
         /// <summary>
-        /// Получение всех объектов AdminModel
+        /// Получение всех объектов MonitorApp
         /// </summary>
         public string getAll()
         {
@@ -94,8 +156,8 @@ namespace ConsoleApp1.controllers.low_level
                         item.Id,
                         item.Name,
                         item.Url,
-                        item.HostId,
-                        item.AdminId
+                        item.Host.Id,
+                        item.Admin.Id
                     );
                 }
 
@@ -108,50 +170,81 @@ namespace ConsoleApp1.controllers.low_level
         }
 
         /// <summary>
-        /// Получение конкретного объекта AdminModel
+        /// Получение конкретного объекта MonitorAppModel
         /// </summary>
-        /*public Func<string, IResult> get = (id) =>
+        public string get(string id)
         {
             if (_db == null)
             {
-                return Results.Json(new MessageModel("Подключение к ООБД отсутствует"));
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
 
             try
             {
-                // Получение конкретной модели
-                AdminModel data = _db.Query<AdminModel>(value => value.Id == id)[0];
+                MonitorAppOutputModel monitorApp = null;
 
-                return Results.Json(data);
+                for (var i = 0; i < _root.idxMonitorApp.Count; i++)
+                {
+                    MonitorAppModel item = (MonitorAppModel)_root.idxMonitorApp.GetAt(i);
+                    
+                    if (item.Id == id)
+                    {
+                        monitorApp = new MonitorAppOutputModel(
+                            item.Id,
+                            item.Name,
+                            item.Url,
+                            item.Host.Id,
+                            item.Admin.Id
+                        );
+                        break;
+                    }
+                }
+
+                return JsonConvert.SerializeObject(monitorApp);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return Results.Json(new MessageModel($"Модели с Id = {id} нет в ООБД"));
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
             }
-        };*/
+        }
 
         /// <summary>
-        /// Удаление объекта AdminModel
+        /// Удаление объекта MonitorAppModel
         /// </summary>
-        /*public Func<string, IResult> delete = (id) =>
+        public string delete(string id)
         {
             if (_db == null)
             {
-                return Results.Json(new MessageModel("Подключение к ООБД отсутствует"));
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
+
+            MonitorAppOutputModel outputData;
 
             try
             {
-                // Получение конкретной модели
-                AdminModel data = _db.Query<AdminModel>(value => value.Id == id)[0];
-                _db.Delete(data);
+                MonitorAppModel monitorApp = (MonitorAppModel)_root.idxMonitorApp[id];
 
-                return Results.Json(data);
+                if (monitorApp == null)
+                {
+                    return JsonConvert.SerializeObject(new MessageModel("Объекта по данному ID нет в БД"));
+                }
+
+                outputData = new MonitorAppOutputModel(
+                    monitorApp.Id,
+                    monitorApp.Name,
+                    monitorApp.Url,
+                    monitorApp.Host.Id,
+                    monitorApp.Admin.Id
+                );
+
+                monitorApp.Delete(_root);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return Results.Json(new MessageModel($"Модели с Id = {id} нет в ООБД"));
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
             }
-        };*/
+
+            return JsonConvert.SerializeObject(outputData);
+        }
     }
 }

@@ -23,58 +23,103 @@ namespace ConsoleApp1.controllers.low_level
         }
 
         /// <summary>
-        /// Обновление объекта AdminModel
+        /// Обновление объекта ServiceModel
         /// </summary>
-        /*public Func<AdminModel, IResult> update = (newData) =>
+        public string update(string obj)
         {
             if (_db == null)
             {
-                return Results.Json(new MessageModel("Подключение к ООБД отсутствует"));
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
 
+            var data = JsonConvert.DeserializeObject<ServiceOutputModel>(obj);
             try
             {
-                AdminModel data = _db.Query<AdminModel>(value => value.Id == newData.Id)[0];
-                data.Email = newData.Email;
+                var service = (ServiceModel)_root.idxService[data.Id];
 
-                _db.Store(data);
+                if (service == null)
+                {
+                    return JsonConvert.SerializeObject(
+                        new MessageModel($"Экземпляра объекта ServiceModel с id={data.Id} не существует в ООБД")
+                    );
+                }
+
+                var dataSource = (DataSourceModel)_root.idxDataSource[data.DataSourceId];
+
+                if (dataSource == null)
+                {
+                    return JsonConvert.SerializeObject(
+                        new MessageModel($"Экземпляра объекта DataSourceModel с id={data.DataSourceId} не существует в ООБД")
+                    );
+                }
+
+                service.Name = data.Name;
+                service.Port = data.Port;
+                service.TimeUpdate = data.TimeUpdate;
+
+                var oldDataSource = (DataSourceModel)_root.idxDataSource[service.DataSource.Id];
+                oldDataSource.ServiceLink.Remove(service);
+
+                dataSource.ServiceLink.Add(service);
+                service.DataSource = dataSource;
+
+                service.Modify();
             }
             catch (Exception e)
             {
-                return Results.Json(new MessageModel(e.Message));
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
             }
 
-            return Results.Json(newData);
-        };*/
+            return JsonConvert.SerializeObject(data);
+        }
 
         /// <summary>
-        /// Создание объекта AdminModel
+        /// Создание объекта ServiceModel
         /// </summary>
-        /*public Func<AdminModel, IResult> create = (data) =>
+        public string create(string obj)
         {
             if (_db == null)
             {
-                return Results.Json(new MessageModel("Подключение к ООБД отсутствует"));
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
 
+            var data = JsonConvert.DeserializeObject<ServiceOutputModel>(obj);
             try
             {
-                // Автоматическая генерация UUID
+                var dataSource = (DataSourceModel)_root.idxDataSource[data.DataSourceId];
+
+                if (dataSource == null)
+                {
+                    return JsonConvert.SerializeObject(
+                        new MessageModel($"Экземпляра объекта DataSourceModel с id={data.DataSourceId} не существует в ООБД")
+                    );
+                }
+
                 data.Id = Guid.NewGuid().ToString();
+                var service = new ServiceModel(
+                        data.Id,
+                        data.Name,
+                        data.Port,
+                        data.TimeUpdate,
+                        dataSource,
+                        _db.CreateLink()
+                );
 
-                // Сохранение модели в ООДБ
-                _db.Store(data);
+                // Добавление ServiceModel в ООБД
+                _root.idxService.Put(service);
+
+                // Добавление ссылки на ServiceModel в модель DataSourceModel
+                dataSource.ServiceLink.Add(service);
             }
             catch (Exception e)
             {
-                return Results.Json(new MessageModel(e.Message));
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
             }
-
-            return Results.Json(data);
-        };*/
+            return JsonConvert.SerializeObject(data);
+        }
 
         /// <summary>
-        /// Получение всех объектов AdminModel
+        /// Получение всех объектов ServiceModel
         /// </summary>
         public string getAll()
         {
@@ -90,12 +135,13 @@ namespace ConsoleApp1.controllers.low_level
                 for (var i = 0; i < _root.idxService.Count; i++)
                 {
                     ServiceModel item = (ServiceModel)_root.idxService.GetAt(i);
+
                     items[i] = new ServiceOutputModel(
                         item.Id,
                         item.Name,
                         item.Port,
                         item.TimeUpdate,
-                        item.DataSourceId
+                        item.DataSource.Id
                     );
                 }
 
@@ -108,50 +154,118 @@ namespace ConsoleApp1.controllers.low_level
         }
 
         /// <summary>
-        /// Получение конкретного объекта AdminModel
+        /// Получение конкретного объекта ServiceModel
         /// </summary>
-        /*public Func<string, IResult> get = (id) =>
+        public string get(string id)
         {
             if (_db == null)
             {
-                return Results.Json(new MessageModel("Подключение к ООБД отсутствует"));
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
 
             try
             {
-                // Получение конкретной модели
-                AdminModel data = _db.Query<AdminModel>(value => value.Id == id)[0];
+                ServiceOutputModel service = null;
 
-                return Results.Json(data);
+                for (var i = 0; i < _root.idxService.Count; i++)
+                {
+                    ServiceModel item = (ServiceModel)_root.idxService.GetAt(i);
+                    if (item.Id == id)
+                    {
+                        service = new ServiceOutputModel(
+                            item.Id,
+                            item.Name,
+                            item.Port,
+                            item.TimeUpdate,
+                            item.DataSource.Id
+                        );
+                        break;
+                    }
+                }
+
+                return JsonConvert.SerializeObject(service);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return Results.Json(new MessageModel($"Модели с Id = {id} нет в ООБД"));
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
             }
-        };*/
+        }
 
         /// <summary>
-        /// Удаление объекта AdminModel
+        /// Удаление объекта ServiceModel
         /// </summary>
-        /*public Func<string, IResult> delete = (id) =>
+        public string delete(string id)
         {
             if (_db == null)
             {
-                return Results.Json(new MessageModel("Подключение к ООБД отсутствует"));
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
+            }
+
+            ServiceOutputModel serviceOutput;
+
+            try
+            {
+                ServiceModel service = (ServiceModel)_root.idxService[id];
+
+                if (service == null)
+                {
+                    return JsonConvert.SerializeObject(new MessageModel("Объекта по данному ID нет в БД"));
+                }
+
+                serviceOutput = new ServiceOutputModel(
+                    service.Id,
+                    service.Name,
+                    service.Port,
+                    service.TimeUpdate,
+                    service.DataSource.Id
+                );
+
+                // Каскадное удаление
+                service.CascadeDelete(_root);
+            }
+            catch (Exception e)
+            {
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
+            }
+
+            return JsonConvert.SerializeObject(serviceOutput);
+        }
+
+        /// <summary>
+        /// Получение списка объектов ServiceModel по порту
+        /// </summary>
+        public string getByPort(string port)
+        {
+            if (_db == null)
+            {
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
 
             try
             {
-                // Получение конкретной модели
-                AdminModel data = _db.Query<AdminModel>(value => value.Id == id)[0];
-                _db.Delete(data);
+                // Использование JSQL
+                var items = _root.idxService.Select(typeof(ServiceModel), $"Port = {port}");
+                List<ServiceOutputModel> itemsOutput = new List<ServiceOutputModel>();
 
-                return Results.Json(data);
+                foreach (var item in items)
+                {
+                    ServiceModel data = (ServiceModel)item;
+
+                    itemsOutput.Add(new ServiceOutputModel(
+                        data.Id,
+                        data.Name,
+                        data.Port,
+                        data.TimeUpdate,
+                        data.DataSource.Id
+                    ));
+                }
+
+                return JsonConvert.SerializeObject(itemsOutput);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return Results.Json(new MessageModel($"Модели с Id = {id} нет в ООБД"));
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
             }
-        };*/
+        }
     }
 }

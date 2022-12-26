@@ -1,0 +1,14 @@
+C:\Projects\Learning\test\ConsoleApp1\bin\Release\ConsoleApp1.exe.config
+C:\Projects\Learning\test\ConsoleApp1\bin\Release\ConsoleApp1.exe
+C:\Projects\Learning\test\ConsoleApp1\bin\Release\ConsoleApp1.pdb
+C:\Projects\Learning\test\ConsoleApp1\bin\Release\Newtonsoft.Json.dll
+C:\Projects\Learning\test\ConsoleApp1\bin\Release\Perst.NET.dll
+C:\Projects\Learning\test\ConsoleApp1\bin\Release\websocket-sharp-core.dll
+C:\Projects\Learning\test\ConsoleApp1\bin\Release\Newtonsoft.Json.xml
+C:\Projects\Learning\test\ConsoleApp1\bin\Release\Perst.NET.pdb
+C:\Projects\Learning\test\ConsoleApp1\obj\Release\oodb-perst-project.csproj.AssemblyReference.cache
+C:\Projects\Learning\test\ConsoleApp1\obj\Release\oodb-perst-project.csproj.SuggestedBindingRedirects.cache
+C:\Projects\Learning\test\ConsoleApp1\obj\Release\oodb-perst-project.csproj.CoreCompileInputs.cache
+C:\Projects\Learning\test\ConsoleApp1\obj\Release\oodb-perst-project.csproj.CopyComplete
+C:\Projects\Learning\test\ConsoleApp1\obj\Release\ConsoleApp1.exe
+C:\Projects\Learning\test\ConsoleApp1\obj\Release\ConsoleApp1.pdb

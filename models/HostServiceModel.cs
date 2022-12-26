@@ -1,4 +1,5 @@
-﻿using Perst;
+﻿using ConsoleApp1.root;
+using Perst;
 
 namespace oodb_project.models
 {
@@ -11,15 +12,28 @@ namespace oodb_project.models
         {
         }
 
-        public HostServiceModel(string id, string hostId, string serviceId)
+        public HostServiceModel(string id, ServiceModel service, HostModel host)
         {
             Id = id;
-            HostId = hostId;
-            ServiceId = serviceId;
+            Service = service;
+            Host = host;
         }
 
         public string Id { get; set; }
-        public string HostId { get; set; }
-        public string ServiceId { get; set; }
+        public ServiceModel Service { get; set; }
+        public HostModel Host { get; set; }
+
+        /// <summary>
+        /// Удаление текущего экземлпяра объекта из ООБД
+        /// </summary>
+        /// <param name="root">Корневой элемент ООБД</param>
+        /// <returns></returns>
+        public bool Delete(PerstRoot root)
+        {
+            Service.HostServiceLink.Remove(this);
+            Host.HostServiceLink.Remove(this);
+
+            return root.idxHostService.Remove(this);
+        }
     }
 }

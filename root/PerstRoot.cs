@@ -11,7 +11,7 @@ namespace ConsoleApp1.root
     /// <summary>
     /// Корневой элемент базы данных
     /// </summary>
-    internal class PerstRoot : Persistent
+    public class PerstRoot : Persistent
     {
         public FieldIndex idxAdmin;
         public FieldIndex idxHost;

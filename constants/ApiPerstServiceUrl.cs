@@ -8,8 +8,12 @@ namespace ConsoleApp1.constants
 {
     internal class ApiPerstServiceUrl
     {
-        static public string GET = "/get/{id}";
+        static public string GET = "/get";
         static public string GET_ALL = "/get/all";
         static public string CREATE = "/save";
+        static public string UPDATE = "/update";
+        static public string DELETE = "/delete";
+
+        static public string GET_BY_PORT = "/get/by/port";
     }
 }

@@ -23,55 +23,63 @@ namespace ConsoleApp1.controllers.low_level
         }
 
         /// <summary>
-        /// Обновление объекта AdminModel
+        /// Обновление объекта HostModel
         /// </summary>
-        /*public Func<AdminModel, IResult> update = (newData) =>
+        public string update(string obj)
         {
             if (_db == null)
             {
-                return Results.Json(new MessageModel("Подключение к ООБД отсутствует"));
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
 
+            var data = JsonConvert.DeserializeObject<HostOutputModel>(obj);
             try
             {
-                AdminModel data = _db.Query<AdminModel>(value => value.Id == newData.Id)[0];
-                data.Email = newData.Email;
+                HostModel host = (HostModel)_root.idxHost[data.Id];
 
-                _db.Store(data);
+                if (host == null)
+                {
+                    return JsonConvert.SerializeObject(new MessageModel("Объекта по данному ID нет в БД"));
+                }
+
+                host.Url = data.Url;
+                host.Name = data.Name;
+                host.IPv4 = data.IPv4;
+                host.System = data.System;
+
+                // Обновление данных
+                host.Modify();
             }
             catch (Exception e)
             {
-                return Results.Json(new MessageModel(e.Message));
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
             }
 
-            return Results.Json(newData);
-        };*/
+            return JsonConvert.SerializeObject(data);
+        }
 
         /// <summary>
-        /// Создание объекта AdminModel
+        /// Создание объекта HostModel
         /// </summary>
-        /*public Func<AdminModel, IResult> create = (data) =>
+        public string create(string obj)
         {
             if (_db == null)
             {
-                return Results.Json(new MessageModel("Подключение к ООБД отсутствует"));
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
 
+            var data = JsonConvert.DeserializeObject<HostOutputModel>(obj);
             try
             {
-                // Автоматическая генерация UUID
                 data.Id = Guid.NewGuid().ToString();
-
-                // Сохранение модели в ООДБ
-                _db.Store(data);
+                _root.idxHost.Put(new HostModel(data.Id, data.Name, data.Url, data.IPv4, data.System, _db.CreateLink(), _db.CreateLink()));
             }
             catch (Exception e)
             {
-                return Results.Json(new MessageModel(e.Message));
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
             }
-
-            return Results.Json(data);
-        };*/
+            return JsonConvert.SerializeObject(data);
+        }
 
         /// <summary>
         /// Получение всех объектов AdminModel
@@ -108,50 +116,81 @@ namespace ConsoleApp1.controllers.low_level
         }
 
         /// <summary>
-        /// Получение конкретного объекта AdminModel
+        /// Получение конкретного объекта HostModel
         /// </summary>
-        /*public Func<string, IResult> get = (id) =>
+        public string get(string id)
         {
             if (_db == null)
             {
-                return Results.Json(new MessageModel("Подключение к ООБД отсутствует"));
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
 
             try
             {
-                // Получение конкретной модели
-                AdminModel data = _db.Query<AdminModel>(value => value.Id == id)[0];
+                HostOutputModel host = null;
 
-                return Results.Json(data);
+                for (var i = 0; i < _root.idxHost.Count; i++)
+                {
+                    HostModel item = (HostModel)_root.idxHost.GetAt(i);
+                    if (item.Id == id)
+                    {
+                        host = new HostOutputModel(
+                            item.Id,
+                            item.Name,
+                            item.Url,
+                            item.IPv4,
+                            item.System
+                        );
+
+                        break;
+                    }
+                }
+
+                return JsonConvert.SerializeObject(host);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return Results.Json(new MessageModel($"Модели с Id = {id} нет в ООБД"));
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
             }
-        };*/
+        }
 
         /// <summary>
-        /// Удаление объекта AdminModel
+        /// Удаление объекта HostModel
         /// </summary>
-        /*public Func<string, IResult> delete = (id) =>
+        public string delete(string id)
         {
             if (_db == null)
             {
-                return Results.Json(new MessageModel("Подключение к ООБД отсутствует"));
+                return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
+
+            HostOutputModel hostOutput;
 
             try
             {
-                // Получение конкретной модели
-                AdminModel data = _db.Query<AdminModel>(value => value.Id == id)[0];
-                _db.Delete(data);
+                HostModel host = (HostModel)_root.idxHost[id];
 
-                return Results.Json(data);
+                if (host == null)
+                {
+                    return JsonConvert.SerializeObject(new MessageModel("Объекта по данному ID нет в БД"));
+                }
+
+                hostOutput = new HostOutputModel(
+                    host.Id,
+                    host.Name,
+                    host.Url,
+                    host.IPv4,
+                    host.System
+                );
+
+                host.CascadeDelete(_root);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return Results.Json(new MessageModel($"Модели с Id = {id} нет в ООБД"));
+                return JsonConvert.SerializeObject(new MessageModel(e.Message));
             }
-        };*/
+
+            return JsonConvert.SerializeObject(hostOutput);
+        }
     }
 }
