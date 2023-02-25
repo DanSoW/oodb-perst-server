@@ -11,7 +11,10 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1.controllers.low_level
 {
-    internal class HostServiceLowController
+    /// <summary>
+    /// Класс низкоуровневого контроллера для коллекции объектов HostService
+    /// </summary>
+    internal class HostServiceLowController : IBaseLowController
     {
         private static Storage _db;
         private static PerstRoot _root;
@@ -62,18 +65,23 @@ namespace ConsoleApp1.controllers.low_level
                     );
                 }
 
+                // Удаление ссылки на старый сервис
                 var oldService = (ServiceModel)_root.idxService[hostService.Service.Id];
                 oldService.HostServiceLink.Remove(hostService);
 
+                // Удаление ссылки на старый хост
                 var oldHost = (HostModel)_root.idxHost[hostService.Host.Id];
                 oldHost.HostServiceLink.Remove(hostService);
 
+                // Добавление ссылки на новый сервис
                 service.HostServiceLink.Add(hostService);
                 hostService.Service = service;
 
+                // Добавление ссылки на новый хост
                 host.HostServiceLink.Add(hostService);
                 hostService.Host = host;
 
+                // Фиксация изменений
                 hostService.Modify();
             }
             catch (Exception e)

@@ -10,7 +10,10 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1.controllers.low_level
 {
-    internal class AdminLowController
+    /// <summary>
+    /// Класс низкоуровневого контроллера для коллекции объектов Admin
+    /// </summary>
+    internal class AdminLowController : IBaseLowController
     {
         private static Storage _db;
         private static PerstRoot _root;
@@ -31,9 +34,11 @@ namespace ConsoleApp1.controllers.low_level
                 return JsonConvert.SerializeObject(new MessageModel("Подключение к ООБД отсутствует"));
             }
 
+            // Десериализация данных (выходная модель)
             var data = JsonConvert.DeserializeObject<AdminOutputModel>(obj);
             try
             {
+                // Поиск объекта в коллекци объектов по id
                 AdminModel admin = (AdminModel)_root.idxAdmin[data.Id];
 
                 if(admin == null)
@@ -41,9 +46,10 @@ namespace ConsoleApp1.controllers.low_level
                     return JsonConvert.SerializeObject(new MessageModel("Объекта по данному ID нет в БД"));
                 }
 
+                // Обновление данных в объекте
                 admin.Email = data.Email;
 
-                // Обновление данных
+                // Фиксирование изменений в БД
                 admin.Modify();
             }
             catch (Exception e)
@@ -67,7 +73,10 @@ namespace ConsoleApp1.controllers.low_level
             var data = JsonConvert.DeserializeObject<AdminOutputModel>(obj);
             try
             {
+                // Добавление id создаваемому объекту
                 data.Id = Guid.NewGuid().ToString();
+
+                // Добавление нового объекта в коллекцию объектов
                 _root.idxAdmin.Put(new AdminModel(data.Id, data.Email, _db.CreateLink()));
             }
             catch (Exception e)
@@ -89,14 +98,17 @@ namespace ConsoleApp1.controllers.low_level
 
             try
             {
+                // Коллекция объектов
                 AdminOutputModel[] items = new AdminOutputModel[_root.idxAdmin.Count];
 
+                // Конвертация объектов из БД в объекты, удобные для конвертации в JSON-формат
                 for(var i = 0; i < _root.idxAdmin.Count; i++)
                 {
                     AdminModel item = (AdminModel)_root.idxAdmin.GetAt(i);
                     items[i] = new AdminOutputModel(item.Id, item.Email);
                 }
 
+                // Возвращение списка объектов
                 return JsonConvert.SerializeObject(items);
             }
             catch (Exception e)
@@ -163,6 +175,7 @@ namespace ConsoleApp1.controllers.low_level
                     admin.Email
                 );
 
+                // Каскадное удаление объекта
                 admin.CascadeDelete(_root);
             }
             catch (Exception e)

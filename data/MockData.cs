@@ -9,7 +9,10 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1.data
 {
-    internal class MockData
+    /// <summary>
+    /// Класс, реализующий добавление в базу данных тестовых данных
+    /// </summary>
+    public class MockData
     {
         private static Storage _db;
         private static PerstRoot _root;
@@ -33,6 +36,9 @@ namespace ConsoleApp1.data
         /* HostsServices Mock */
         public MonitorAppModel[] monitorApp;
 
+        /// <summary>
+        /// Генерация данных для коллекции MonitorApp
+        /// </summary>
         public void generateMonitorApp()
         {
             monitorApp = new[]
@@ -78,6 +84,9 @@ namespace ConsoleApp1.data
             }
         }
         
+        /// <summary>
+        /// Генерация данных для коллекции объектов Host
+        /// </summary>
         public void generateHosts()
         {
             hosts = new[]
@@ -100,6 +109,9 @@ namespace ConsoleApp1.data
             }
         }
 
+        /// <summary>
+        /// Генерация данных для коллекции объектов Admin
+        /// </summary>
         public void generateAdmins()
         {
             admins = new[]
@@ -117,6 +129,9 @@ namespace ConsoleApp1.data
             }
         }
 
+        /// <summary>
+        /// Генерация данных для коллекции DataSource и Service
+        /// </summary>
         public void generateDataSource_Service()
         {
             dataSources = new[]
@@ -182,6 +197,9 @@ namespace ConsoleApp1.data
             }
         }
 
+        /// <summary>
+        /// Генерация данных для коллекции объектов HostService и Service
+        /// </summary>
         public void generateHostServices_Service()
         {
             hostsServices = new[]
@@ -220,7 +238,9 @@ namespace ConsoleApp1.data
             }
         }
 
-        /* ----- */
+        /// <summary>
+        /// Генерация всех тестовых данных последовательно
+        /// </summary>
         public void generateData()
         {
             if ((_db == null) || (_root == null))

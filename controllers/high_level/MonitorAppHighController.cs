@@ -15,51 +15,11 @@ using WebSocketSharp.Server;
 
 namespace ConsoleApp1.controllers.high_level
 {
-    internal class MonitorAppHighController : WebSocketBehavior
+    /// <summary>
+    /// Обработчик верхнего уровня для коллекции объектов MonitorApp
+    /// </summary>
+    public class MonitorAppHighController : BaseHighController
     {
-        private MonitorAppLowController _controller;
-
-        public MonitorAppHighController(Storage db, PerstRoot root)
-        {
-            _controller = new MonitorAppLowController(db, root);
-        }
-
-        public MonitorAppHighController() { }
-
-        protected override void OnMessage(MessageEventArgs e)
-        {
-            InitSendRoute(JsonConvert.DeserializeObject<HttpModel>(e.Data));
-        }
-
-        public void InitSendRoute(HttpModel body)
-        {
-            if (body.Path == ApiPerstServiceUrl.GET_ALL)
-            {
-                Send(_controller.getAll());
-                return;
-            }
-            else if (body.Path == ApiPerstServiceUrl.GET)
-            {
-                Send(_controller.get(body.Payload));
-                return;
-            }
-            else if (body.Path == ApiPerstServiceUrl.CREATE)
-            {
-                Send(_controller.create(body.Payload));
-                return;
-            }
-            else if (body.Path == ApiPerstServiceUrl.UPDATE)
-            {
-                Send(_controller.update(body.Payload));
-                return;
-            }
-            else if (body.Path == ApiPerstServiceUrl.DELETE)
-            {
-                Send(_controller.delete(body.Payload));
-                return;
-            }
-
-            Send(JsonConvert.SerializeObject(new MessageModel("Not found 404")));
-        }
+        public MonitorAppHighController(Storage db, PerstRoot root) : base(new MonitorAppLowController(db, root)) { }
     }
 }

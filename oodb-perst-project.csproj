@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="constants\ApiPerstServiceUrl.cs" />
     <Compile Include="controllers\high_level\AdminHighController.cs" />
+    <Compile Include="controllers\high_level\BaseHighController.cs" />
     <Compile Include="controllers\high_level\DataSourceHighController.cs" />
     <Compile Include="controllers\high_level\HostHighController.cs" />
     <Compile Include="controllers\high_level\HostServiceHighController.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="controllers\low_level\DataSourceLowController.cs" />
     <Compile Include="controllers\low_level\HostLowController.cs" />
     <Compile Include="controllers\low_level\HostServiceLowController.cs" />
+    <Compile Include="controllers\low_level\IBaseLowController.cs" />
     <Compile Include="controllers\low_level\MonitorAppLowController.cs" />
     <Compile Include="controllers\low_level\ServiceLowController.cs" />
     <Compile Include="data\MockData.cs" />

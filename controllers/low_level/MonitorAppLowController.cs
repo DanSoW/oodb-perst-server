@@ -11,7 +11,10 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1.controllers.low_level
 {
-    internal class MonitorAppLowController
+    /// <summary>
+    /// Класс низкоуровневого контроллера для коллекции объектов MonitorApp
+    /// </summary>
+    internal class MonitorAppLowController : IBaseLowController
     {
         private static Storage _db;
         private static PerstRoot _root;

@@ -9,10 +9,11 @@ using System.Threading.Tasks;
 namespace ConsoleApp1.root
 {
     /// <summary>
-    /// Корневой элемент базы данных
+    /// Класс, представляющий корневой элемент базы данных
     /// </summary>
     public class PerstRoot : Persistent
     {
+        // Индексы для быстрого доступа к коллекциям объектов
         public FieldIndex idxAdmin;
         public FieldIndex idxHost;
         public FieldIndex idxMonitorApp;
@@ -20,6 +21,10 @@ namespace ConsoleApp1.root
         public FieldIndex idxHostService;
         public FieldIndex idxService;
 
+        /// <summary>
+        /// Конструктор с параметром
+        /// </summary>
+        /// <param name="db">Хранилище</param>
         public PerstRoot(Storage db) : base(db)
         {
             idxAdmin = db.CreateFieldIndex(typeof(AdminModel), "Id", true);

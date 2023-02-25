@@ -15,55 +15,11 @@ using WebSocketSharp.Server;
 
 namespace ConsoleApp1.controllers.high_level
 {
-    internal class ServiceHighController : WebSocketBehavior
+    /// <summary>
+    /// Обработчик верхнего уровня для коллекции объектов ServiceHigh
+    /// </summary>
+    public class ServiceHighController : BaseHighController
     {
-        private ServiceLowController _controller;
-
-        public ServiceHighController(Storage db, PerstRoot root)
-        {
-            _controller = new ServiceLowController(db, root);
-        }
-
-        public ServiceHighController() { }
-
-        protected override void OnMessage(MessageEventArgs e)
-        {
-            InitSendRoute(JsonConvert.DeserializeObject<HttpModel>(e.Data));
-        }
-
-        public void InitSendRoute(HttpModel body)
-        {
-            if (body.Path == ApiPerstServiceUrl.GET_ALL)
-            {
-                Send(_controller.getAll());
-                return;
-            }
-            else if (body.Path == ApiPerstServiceUrl.GET)
-            {
-                Send(_controller.get(body.Payload));
-                return;
-            }
-            else if (body.Path == ApiPerstServiceUrl.CREATE)
-            {
-                Send(_controller.create(body.Payload));
-                return;
-            }
-            else if (body.Path == ApiPerstServiceUrl.UPDATE)
-            {
-                Send(_controller.update(body.Payload));
-                return;
-            }
-            else if (body.Path == ApiPerstServiceUrl.DELETE)
-            {
-                Send(_controller.delete(body.Payload));
-                return;
-            }else if(body.Path == ApiPerstServiceUrl.GET_BY_PORT)
-            {
-                Send(_controller.getByPort(body.Payload));
-                return;
-            }
-
-            Send(JsonConvert.SerializeObject(new MessageModel("Not found 404")));
-        }
+        public ServiceHighController(Storage db, PerstRoot root) : base(new ServiceLowController(db, root)) { }
     }
 }

@@ -11,7 +11,10 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1.controllers.low_level
 {
-    internal class DataSourceLowController
+    /// <summary>
+    /// Класс низкоуровневого контроллера для коллекции объектов DataSource
+    /// </summary>
+    internal class DataSourceLowController : IBaseLowController
     {
         private static Storage _db;
         private static PerstRoot _root;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1.models
 {
-    internal class IndexModel
+    public class IndexModel
     {
         public IndexModel()
         {

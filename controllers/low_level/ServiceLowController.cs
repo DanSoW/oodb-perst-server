@@ -11,7 +11,10 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1.controllers.low_level
 {
-    internal class ServiceLowController
+    /// <summary>
+    /// Класс низкоуровневого контроллера для коллекции объектов ServiceLow
+    /// </summary>
+    internal class ServiceLowController : IBaseLowController
     {
         private static Storage _db;
         private static PerstRoot _root;
